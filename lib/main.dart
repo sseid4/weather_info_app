@@ -26,6 +26,25 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
 
   final RestorableInt tabIndex = RestorableInt(0);
 
+  // Weather UI state
+  final TextEditingController _cityController = TextEditingController();
+  String _city = '--';
+  String _temperature = '--';
+  String _condition = '--';
+
+  void _fetchWeather() {
+    final cityName = _cityController.text.trim();
+    if (cityName.isEmpty) return;
+    final temp = 15 + (DateTime.now().millisecondsSinceEpoch % 16); // 15-30
+    final conditions = ['Sunny', 'Cloudy', 'Rainy'];
+    final cond = (conditions..shuffle()).first;
+    setState(() {
+      _city = cityName;
+      _temperature = '$temp°C';
+      _condition = cond;
+    });
+  }
+
   @override
   String get restorationId => 'tab_non_scrollable_demo';
 
@@ -88,6 +107,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     TextField(
+                      controller: _cityController,
                       decoration: InputDecoration(
                         labelText: 'Enter city name',
                         border: OutlineInputBorder(),
@@ -95,17 +115,21 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
                     ),
                     SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () {
-                        // TODO: Implement fetch weather logic
-                      },
+                      onPressed: _fetchWeather,
                       child: Text('Fetch Weather'),
                     ),
                     SizedBox(height: 32),
-                    Text('City: --', style: TextStyle(fontSize: 18)),
+                    Text('City: $_city', style: TextStyle(fontSize: 18)),
                     SizedBox(height: 8),
-                    Text('Temperature: --', style: TextStyle(fontSize: 18)),
+                    Text(
+                      'Temperature: $_temperature',
+                      style: TextStyle(fontSize: 18),
+                    ),
                     SizedBox(height: 8),
-                    Text('Condition: --', style: TextStyle(fontSize: 18)),
+                    Text(
+                      'Condition: $_condition',
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ],
                 ),
               ),
