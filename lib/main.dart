@@ -34,7 +34,13 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
 
   void _fetchWeather() {
     final cityName = _cityController.text.trim();
-    if (cityName.isEmpty) return;
+    if (cityName.isEmpty) {
+      // basic validation feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a city name')),
+      );
+      return;
+    }
     final temp = 15 + (DateTime.now().millisecondsSinceEpoch % 16); // 15-30
     final conditions = ['Sunny', 'Cloudy', 'Rainy'];
     final cond = (conditions..shuffle()).first;
@@ -43,6 +49,10 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
       _temperature = '$temp°C';
       _condition = cond;
     });
+    // success feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Weather updated for $cityName')),
+    );
   }
 
   @override
@@ -68,6 +78,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   @override
   void dispose() {
     _tabController.dispose();
+    _cityController.dispose(); // Added this line to prevent memory leak
     tabIndex.dispose();
     super.dispose();
   }
@@ -86,7 +97,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Tabs Demo'),
+        title: Text('Weather Info App'), // Changed from 'Tabs Demo'
         bottom: TabBar(
           controller: _tabController,
           isScrollable: false,
