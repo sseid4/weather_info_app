@@ -10,10 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: DefaultTabController(
-        length: 4,
-        child: _TabsNonScrollableDemo(),
-      ),
+      home: DefaultTabController(length: 4, child: _TabsNonScrollableDemo()),
     );
   }
 }
@@ -41,11 +38,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
-      initialIndex: 0,
-      length: 4,
-      vsync: this,
-    );
+    _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
     _tabController.addListener(() {
       setState(() {
         tabIndex.value = _tabController.index;
@@ -62,7 +55,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
 
   @override
   Widget build(BuildContext context) {
-// For the To do task hint: consider defining the widget and name of the tabs here
+    // For the To do task hint: consider defining the widget and name of the tabs here
     final tabs = ['Monday', 'Tuesday', 'Wednesday', 'Thursday'];
     final tabColors = [
       Colors.blue[50],
@@ -74,42 +67,47 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text(
-          'Tabs Demo',
-        ),
+        title: Text('Tabs Demo'),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: false,
-          tabs: [
-            for (final tab in tabs) Tab(text: tab),
-          ],
+          tabs: [for (final tab in tabs) Tab(text: tab)],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-// hint for the to do task:Considering creating the different for different tabs
-          // Tab 1: text and alert dialog
+          // hint for the to do task:Considering creating the different for different tabs
+          // Tab 1: Weather UI
           Container(
             color: tabColors[0],
             child: Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Alert'),
-                      content: Text('This is an alert dialog from Tab 1'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Text('OK'),
-                        ),
-                      ],
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Enter city name',
+                        border: OutlineInputBorder(),
+                      ),
                     ),
-                  );
-                },
-                child: Text('Show Alert Dialog'),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        // TODO: Implement fetch weather logic
+                      },
+                      child: Text('Fetch Weather'),
+                    ),
+                    SizedBox(height: 32),
+                    Text('City: --', style: TextStyle(fontSize: 18)),
+                    SizedBox(height: 8),
+                    Text('Temperature: --', style: TextStyle(fontSize: 18)),
+                    SizedBox(height: 8),
+                    Text('Condition: --', style: TextStyle(fontSize: 18)),
+                  ],
+                ),
               ),
             ),
           ),
