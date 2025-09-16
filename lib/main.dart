@@ -35,7 +35,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   void _fetchWeather() {
     final cityName = _cityController.text.trim();
     if (cityName.isEmpty) {
-      // basic validation feedback
+      // Added basic validation feedback
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please enter a city name')),
       );
@@ -49,7 +49,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
       _temperature = '$temp°C';
       _condition = cond;
     });
-    // success feedback
+    // Added success feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Weather updated for $cityName')),
     );
@@ -117,6 +117,13 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Weather image
+                    Image.network(
+                      'https://cdn-icons-png.flaticon.com/512/1163/1163661.png',
+                      width: 100,
+                      height: 100,
+                    ),
+                    SizedBox(height: 16),
                     TextField(
                       controller: _cityController,
                       decoration: InputDecoration(
@@ -176,43 +183,70 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
           Container(
             color: tabColors[2],
             child: Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Button pressed in ${tabs[2]} tab!'),
-                    ),
-                  );
-                },
-                child: Text('Click me'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Button/Click image
+                  Image.network(
+                    'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
+                    width: 100,
+                    height: 100,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Button pressed in ${tabs[2]} tab!'),
+                        ),
+                      );
+                    },
+                    child: Text('Click me'),
+                  ),
+                ],
               ),
             ),
           ),
           // Tab 4: ListView Widgets
           Container(
             color: tabColors[3],
-            child: ListView(
-              padding: EdgeInsets.all(16),
+            child: Column(
               children: [
-                Card(
-                  elevation: 4,
-                  child: ListTile(
-                    title: Text('Item 1'),
-                    subtitle: Text('Details about Item 1'),
+                // List/Menu image at top
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Image.network(
+                    'https://cdn-icons-png.flaticon.com/512/1164/1164954.png',
+                    width: 80,
+                    height: 80,
                   ),
                 ),
-                Card(
-                  elevation: 4,
-                  child: ListTile(
-                    title: Text('Item 2'),
-                    subtitle: Text('Details about Item 2'),
-                  ),
-                ),
-                Card(
-                  elevation: 4,
-                  child: ListTile(
-                    title: Text('Item 3'),
-                    subtitle: Text('Details about Item 3'),
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.all(16),
+                    children: [
+                      Card(
+                        elevation: 4,
+                        child: ListTile(
+                          title: Text('Item 1'),
+                          subtitle: Text('Details about Item 1'),
+                        ),
+                      ),
+                      Card(
+                        elevation: 4,
+                        child: ListTile(
+                          title: Text('Item 2'),
+                          subtitle: Text('Details about Item 2'),
+                        ),
+                      ),
+                      Card(
+                        elevation: 4,
+                        child: ListTile(
+                          title: Text('Item 3'),
+                          subtitle: Text('Details about Item 3'),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
