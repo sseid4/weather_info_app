@@ -31,6 +31,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   String _city = '--';
   String _temperature = '--';
   String _condition = '--';
+  List<Map<String, String>> _forecast = [];
 
   void _fetchWeather() {
     final cityName = _cityController.text.trim();
@@ -42,6 +43,26 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
       _city = cityName;
       _temperature = '$temp°C';
       _condition = cond;
+    });
+  }
+
+  void _fetchForecast() {
+    final cityName = _cityController.text.trim();
+    if (cityName.isEmpty) return;
+    final conditions = ['Sunny', 'Cloudy', 'Rainy'];
+    final List<Map<String, String>> forecast = [];
+    for (int i = 0; i < 7; i++) {
+      final temp = 15 + (DateTime.now().millisecondsSinceEpoch % 16) + i;
+      conditions.shuffle();
+      forecast.add({
+        'day': 'Day ${i + 1}',
+        'city': cityName,
+        'temp': '$temp°C',
+        'cond': conditions.first,
+      });
+    }
+    setState(() {
+      _forecast = forecast;
     });
   }
 
@@ -103,34 +124,69 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
             child: Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextField(
-                      controller: _cityController,
-                      decoration: InputDecoration(
-                        labelText: 'Enter city name',
-                        border: OutlineInputBorder(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextField(
+                        controller: _cityController,
+                        decoration: InputDecoration(
+                          labelText: 'Enter city name',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _fetchWeather,
-                      child: Text('Fetch Weather'),
-                    ),
-                    SizedBox(height: 32),
-                    Text('City: $_city', style: TextStyle(fontSize: 18)),
-                    SizedBox(height: 8),
-                    Text(
-                      'Temperature: $_temperature',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Condition: $_condition',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ],
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _fetchWeather,
+                        child: Text('Fetch Weather'),
+                      ),
+                      SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: _fetchForecast,
+                        child: Text('7-Day Forecast'),
+                      ),
+                      SizedBox(height: 32),
+                      Text('City: $_city', style: TextStyle(fontSize: 18)),
+                      SizedBox(height: 8),
+                      Text(
+                        'Temperature: $_temperature',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Condition: $_condition',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      SizedBox(height: 32),
+                      if (_forecast.isNotEmpty) ...[
+                        Text(
+                          '7-Day Forecast:',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        Column(
+                          children: _forecast
+                              .map(
+                                (day) => Card(
+                                  child: ListTile(
+                                    title: Text(
+                                      '${day['day']} - ${day['city']}',
+                                    ),
+                                    subtitle: Text(
+                                      'Temp: ${day['temp']} | Condition: ${day['cond']}',
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ),
