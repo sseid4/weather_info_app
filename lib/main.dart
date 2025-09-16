@@ -32,6 +32,9 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   String _temperature = '--';
   String _condition = '--';
 
+  // 7-day forecast data
+  List<Map<String, String>> _forecast = [];
+
   void _fetchWeather() {
     final cityName = _cityController.text.trim();
     if (cityName.isEmpty) {
@@ -52,6 +55,40 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
     // Added success feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Weather updated for $cityName')),
+    );
+  }
+
+  void _fetch7DayForecast() {
+    final cityName = _cityController.text.trim();
+    if (cityName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a city name')),
+      );
+      return;
+    }
+
+    // Generate 7-day forecast data
+    final days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    final conditions = ['Sunny', 'Cloudy', 'Rainy'];
+    List<Map<String, String>> newForecast = [];
+    
+    for (int i = 0; i < 7; i++) {
+      final temp = 15 + ((DateTime.now().millisecondsSinceEpoch + i * 1000) % 16);
+      final condition = (conditions..shuffle()).first;
+      
+      newForecast.add({
+        'day': days[i],
+        'temperature': '$temp°C',
+        'condition': condition,
+      });
+    }
+    
+    setState(() {
+      _forecast = newForecast;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('7-day forecast loaded for $cityName')),
     );
   }
 
@@ -78,7 +115,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   @override
   void dispose() {
     _tabController.dispose();
-    _cityController.dispose(); // Added this line to prevent memory leak
+    _cityController.dispose();
     tabIndex.dispose();
     super.dispose();
   }
@@ -89,7 +126,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
     final tabs = ['Monday', 'Tuesday', 'Wednesday', 'Thursday'];
     final tabColors = [
       Colors.blue[50],
-      Colors.pink[50],
+      Colors.orange[50],
       Colors.green[50],
       Colors.yellow[50],
     ];
@@ -97,7 +134,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Weather Info App'), // Changed from 'Tabs Demo'
+        title: Text('Weather Info App'), 
         bottom: TabBar(
           controller: _tabController,
           isScrollable: false,
@@ -108,7 +145,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
         controller: _tabController,
         children: [
           // hint for the to do task:Considering creating the different for different tabs
-          // Tab 1: Weather UI
+          // Tab 1: Weather UI with 7-day forecast button (Monday tab)
           Container(
             color: tabColors[0],
             child: Center(
@@ -132,9 +169,23 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
                       ),
                     ),
                     SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _fetchWeather,
-                      child: Text('Fetch Weather'),
+                    // Two buttons: current weather and 7-day forecast
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: _fetchWeather,
+                          child: Text('Fetch Weather'),
+                        ),
+                        ElevatedButton(
+                          onPressed: _fetch7DayForecast,
+                          child: Text('7-Day Forecast'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 32),
                     Text('City: $_city', style: TextStyle(fontSize: 18)),
@@ -153,40 +204,100 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
               ),
             ),
           ),
-          // Tab 2: text and image
+          // Tab 2: 7-Day Forecast Display (Tuesday tab - was text and image)
           Container(
             color: tabColors[1],
-            child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.network(
-                    'https://upload.wikimedia.org/wikipedia/commons/1/17/Google-flutter-logo.png',
-                    width: 150,
-                    height: 150,
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Enter something',
-                        border: OutlineInputBorder(),
-                      ),
+                  Text(
+                    '7-Day Weather Forecast',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange[800],
                     ),
                   ),
+                  SizedBox(height: 16),
+                  if (_forecast.isEmpty)
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.calendar_view_week,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'No forecast data available',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            Text(
+                              'Go to Weather tab and tap "7-Day Forecast"',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: _forecast.length,
+                        itemBuilder: (context, index) {
+                          final dayForecast = _forecast[index];
+                          return Card(
+                            elevation: 4,
+                            margin: EdgeInsets.symmetric(vertical: 4),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.orange[200],
+                                child: Text(
+                                  dayForecast['day']![0],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange[800],
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                dayForecast['day']!,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(dayForecast['condition']!),
+                              trailing: Text(
+                                dayForecast['temperature']!,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               ),
             ),
           ),
-          // Tab 3: Button widget
+          // Tab 3: Button widget (Wednesday tab - unchanged)
           Container(
             color: tabColors[2],
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Button/Click image
                   Image.network(
                     'https://cdn-icons-png.flaticon.com/512/1077/1077114.png',
                     width: 100,
@@ -207,7 +318,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
               ),
             ),
           ),
-          // Tab 4: ListView Widgets
+          // Tab 4: ListView Widgets (Thursday tab - unchanged)
           Container(
             color: tabColors[3],
             child: Column(
