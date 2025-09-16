@@ -63,7 +63,7 @@ class __TabsNonScrollableDemoState extends State<_TabsNonScrollableDemo>
   @override
   Widget build(BuildContext context) {
 // For the To do task hint: consider defining the widget and name of the tabs here
-    final tabs = ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4'];
+    final tabs = ['Monday', 'Tuesday', 'Wednesday', 'Thursday'];
     final tabColors = [
       Colors.blue[50],
       Colors.pink[50],
